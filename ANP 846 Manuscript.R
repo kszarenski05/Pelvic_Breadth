@@ -507,138 +507,136 @@ accuracy
 
 
 
-#search for packages.
+#search for packages. This is for the Rmd version so it has been commented out
 
 
-search_package_usage <- function(file, pkg, ignore_comments = TRUE) {
-  # Read Rmd
-  rmd_lines <- readLines(file)
+#search_package_usage <- function(file, pkg, ignore_comments = TRUE) {
+#  # Read Rmd
+#  rmd_lines <- readLines(file)
   
-  # Identify code chunks
-  start <- grep("^```\\{r", rmd_lines)
-  end   <- grep("^```$", rmd_lines)
-  if(length(start) == 0) stop("No R code chunks found")
+#  # Identify code chunks
+#  start <- grep("^```\\{r", rmd_lines)
+#  end   <- grep("^```$", rmd_lines)
+#  if(length(start) == 0) stop("No R code chunks found")
   
-  code_lines <- character()
-  code_line_numbers <- integer()
+#  code_lines <- character()
+#  code_line_numbers <- integer()
   
-  for(i in seq_along(start)) {
-    s <- start[i]
-    e <- end[end > s][1]
-    chunk <- rmd_lines[(s+1):(e-1)]
+#  for(i in seq_along(start)) {
+#    s <- start[i]
+#    e <- end[end > s][1]
+#    chunk <- rmd_lines[(s+1):(e-1)]
     
-    if(ignore_comments) {
-      non_comment_idx <- which(!grepl("^\\s*#", chunk))
-      chunk <- chunk[non_comment_idx]
-      lines_nums <- (s+1):(e-1)
-      lines_nums <- lines_nums[non_comment_idx]
-    } else {
-      lines_nums <- (s+1):(e-1)
-    }
+#    if(ignore_comments) {
+#      non_comment_idx <- which(!grepl("^\\s*#", chunk))
+#      chunk <- chunk[non_comment_idx]
+#      lines_nums <- (s+1):(e-1)
+#      lines_nums <- lines_nums[non_comment_idx]
+#    } else {
+#      lines_nums <- (s+1):(e-1)
+#    }
     
-    code_lines <- c(code_lines, chunk)
-    code_line_numbers <- c(code_line_numbers, lines_nums)
-  }
+#    code_lines <- c(code_lines, chunk)
+#    code_line_numbers <- c(code_line_numbers, lines_nums)
+#  }
   
-  # Package functions
-  if(!requireNamespace(pkg, quietly = TRUE)) stop(paste0("Package ", pkg, " not installed"))
-  pkg_funs <- ls(paste0("package:", pkg))
-  pattern <- paste0("\\b(", pkg, "::)?(", paste(pkg_funs, collapse="|"), ")\\b")
+#  # Package functions
+#  if(!requireNamespace(pkg, quietly = TRUE)) stop(paste0("Package ", pkg, " not installed"))
+#  pkg_funs <- ls(paste0("package:", pkg))
+#  pattern <- paste0("\\b(", pkg, "::)?(", paste(pkg_funs, collapse="|"), ")\\b")
   
-  # Search each line and expand multiple matches
-  results <- data.frame(line_in_rmd = integer(),
-                        matched_text = character(),
-                        full_line = character(),
-                        stringsAsFactors = FALSE)
+#  # Search each line and expand multiple matches
+#  results <- data.frame(line_in_rmd = integer(),
+#                        matched_text = character(),
+#                        full_line = character(),
+#                        stringsAsFactors = FALSE)
   
-  for(i in seq_along(code_lines)) {
-    matches <- str_extract_all(code_lines[i], pattern)[[1]]
-    if(length(matches) > 0) {
-      results <- rbind(
-        results,
-        data.frame(
-          line_in_rmd = rep(code_line_numbers[i], length(matches)),
-          matched_text = matches,
-          full_line = rep(code_lines[i], length(matches)),
-          stringsAsFactors = FALSE
-        )
-      )
-    }
-  }
+#  for(i in seq_along(code_lines)) {
+#    matches <- str_extract_all(code_lines[i], pattern)[[1]]
+#    if(length(matches) > 0) {
+#      results <- rbind(
+#        results,
+#        data.frame(
+#          line_in_rmd = rep(code_line_numbers[i], length(matches)),
+#          matched_text = matches,
+#          full_line = rep(code_lines[i], length(matches)),
+#          stringsAsFactors = FALSE
+#        )
+#      )
+#    }
+#  }
   
-  results
-}
+#  results
+#}
 
-#do not put "ape" in, it will crash
-pkgs <- c(
-  "OTE", "tidyr", "psych", "ggplot2", "dplyr", "kableExtra", "pheatmap",
-  "dendextend", "mice", "naniar", "forcats", "GGally", "gt", "viridis",
-  "RColorBrewer", "plotly", "reshape2", "gridExtra", "descr", "plyr",
-  "ggthemes", "stringr", "FactoMineR", "MASS", "ggdendro", "corrplot",
-  "gtsummary", "ggsignif", "ggpubr", "tibble", "webshot2", "patchwork"
-)
+##do not put "ape" in, it will crash
+#pkgs <- c(
+#  "OTE", "tidyr", "psych", "ggplot2", "dplyr", "kableExtra", "pheatmap",
+#  "dendextend", "mice", "naniar", "forcats", "GGally", "gt", "viridis",
+#  "RColorBrewer", "plotly", "reshape2", "gridExtra", "descr", "plyr",
+#  "ggthemes", "stringr", "FactoMineR", "MASS", "ggdendro", "corrplot",
+#  "gtsummary", "ggsignif", "ggpubr", "tibble", "webshot2", "patchwork"
+#)
 
-all_usage <- data.frame(package = character(),
-                        matched_text = character(),
-                        stringsAsFactors = FALSE)
+#all_usage <- data.frame(package = character(),
+#                        matched_text = character(),
+#                        stringsAsFactors = FALSE)
 
-# Loop through packages
-for(pkg in pkgs) {
-  usage <- search_package_usage("ANP 846 Manuscript.Rmd", pkg)
+## Loop through packages
+#for(pkg in pkgs) {
+#  usage <- search_package_usage("ANP 846 Manuscript.Rmd", pkg)
   
-  if(nrow(usage) > 0) {
-    usage$package <- pkg
-    usage <- usage[, c("package", "matched_text")]
-    all_usage <- bind_rows(all_usage, usage)
-  }
-}
-if(nrow(all_usage) == 0) {
-  stop("No package functions found in the Rmd file.")
-}
+#  if(nrow(usage) > 0) {
+#    usage$package <- pkg
+#    usage <- usage[, c("package", "matched_text")]
+#    all_usage <- bind_rows(all_usage, usage)
+#  }
+#}
+#if(nrow(all_usage) == 0) {
+#  stop("No package functions found in the Rmd file.")
+#}
 
-unique_usage <- all_usage %>%
-  distinct(package, matched_text)
-unique_usage
+#unique_usage <- all_usage %>%
+#  distinct(package, matched_text)
+#unique_usage
 
-package_summary <- aggregate(
-  matched_text ~ package,
-  data = unique_usage,
-  FUN = function(x) paste(x, collapse = ", ")
-)
-package_summary <- package_summary[order(package_summary$package), ]
+#package_summary <- aggregate(
+#  matched_text ~ package,
+#  data = unique_usage,
+#  FUN = function(x) paste(x, collapse = ", ")
+#)
+#package_summary <- package_summary[order(package_summary$package), ]
 
-package_summary
+#package_summary
 
-
-
-unique_usage <- all_usage %>%
-  distinct(package, matched_text)
+#unique_usage <- all_usage %>%
+#  distinct(package, matched_text)
 
 
-summary_table <- package_summary %>%
-  gt() %>%
-  tab_header(
-    title = "Functions Used per Package",
-    subtitle = "Extracted from R Markdown"
-  ) %>%
-  cols_label(
-    package = "Package",
-    matched_text = "Functions"
-  ) %>%
-  tab_options(
-    table.width = pct(100),
-    heading.title.font.size = 16,
-    heading.subtitle.font.size = 12,
-    data_row.padding = px(3)
-  )%>%
-  tab_style(
-    style = cell_text(align = "center"), 
-    locations = cells_column_labels(everything())
-  )
+#summary_table <- package_summary %>%
+#  gt() %>%
+#  tab_header(
+#    title = "Functions Used per Package",
+#    subtitle = "Extracted from R Markdown"
+#  ) %>%
+#  cols_label(
+#    package = "Package",
+#    matched_text = "Functions"
+#  ) %>%
+#  tab_options(
+#    table.width = pct(100),
+#    heading.title.font.size = 16,
+#    heading.subtitle.font.size = 12,
+#    data_row.padding = px(3)
+#  )%>%
+#  tab_style(
+#    style = cell_text(align = "center"), 
+#    locations = cells_column_labels(everything())
+#  )
 
 
-summary_table
-#gtsave(summary_table, "package_functions_summary.png")
+#summary_table
+##gtsave(summary_table, "package_functions_summary.png")
 
 
 
@@ -719,5 +717,6 @@ cm.0
 
 accuracy.0 <- sum(diag(cm.0)) / sum(cm.0) * 100
 accuracy.0
+
 
 
